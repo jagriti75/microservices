@@ -1,0 +1,67 @@
+package external.api.controller;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import external.api.entity.postEntity;
+
+@RestController
+public class ApiController {
+	
+	Logger logger = LoggerFactory.getLogger(this.getClass());
+	HttpHeaders headers = new HttpHeaders();
+	//to consume and external api
+	@GetMapping(value = "/ips"  )
+	private String getAll(HttpServletResponse response) throws IOException{
+		String uri = "https://ipinfo.io/161.185.160.93/geo";
+		RestTemplate restTemplate = new RestTemplate();	
+		String ipList = restTemplate.getForObject(uri, String.class);
+		LocalDateTime date = LocalDateTime.now();
+		String id = UUID.randomUUID().toString();
+		response.setHeader("DateTime Logged in",date.toString());
+		response.setHeader("id",id);
+		logger.info("DateTime Logged in : "+ date);
+		logger.info("Id: ",id);
+		return ipList;
+	}
+	
+	//to set headers 
+	@GetMapping(value ="/all")
+	private String getBpi() throws IOException {
+		String url = "https://api.us-east-a.apiconnect.ibmappdomain.cloud/v10-0/sandbox/bitcoin/coin";
+		headers.set("X-IBM-Client-Id", "f7c6f8cc5a0c982a915c9b1b68590c7a");
+		HttpEntity<String> entity = new HttpEntity<String>(headers);
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response= restTemplate.exchange(url,HttpMethod.GET,entity,String.class);
+		LocalDateTime date =  LocalDateTime.now();
+		String id = UUID.randomUUID().toString();
+		logger.info("DateTime Logged in : "+ date);
+		logger.info("Id: "+ id);
+		return response.getBody();
+	}
+
+	@PostMapping(value="/post")
+	private String getList1(@RequestBody postEntity entity) {
+		String url1 = "https://jsonplaceholder.typicode.com/posts";
+		RestTemplate restTemplate = new RestTemplate();
+		String response1 = restTemplate.postForEntity(url1, entity , String.class).getBody();
+		return response1;
+	}
+	
+	
+}
