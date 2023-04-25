@@ -1,29 +1,30 @@
 package validation.user.error;
 
-import java.time.LocalDateTime;
-import java.util.Map;
+
+
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class error{
+public class root{
 
- private int statusCode;
- private LocalDateTime timestamp;
- private Map<String,String> message;
+ //private int statusCode;
+ //private LocalDateTime timestamp;
+ private String errorMessage;
  
 
-public error(int statusCode, LocalDateTime timestamp, Map<String,String> message) {
-	super();
-	this.statusCode = statusCode;
-	this.timestamp = timestamp;
-	this.message = message;
+public root( String errorMessage) {
+	//super();
+	//this.statusCode = statusCode;
+	//this.timestamp = timestamp;
+	this.errorMessage = errorMessage;
 }
-public error() {
+public root() {
 	super();
 	// TODO Auto-generated constructor stub
 }
-public int getStatusCode() {
+
+/*public int getStatusCode() {
 	return statusCode;
 }
 public void setStatusCode(int statusCode) {
@@ -34,12 +35,13 @@ public LocalDateTime getTimestamp() {
 }
 public void setTimestamp(LocalDateTime timestamp) {
 	this.timestamp = timestamp;
+}*/
+
+public String getMessage() {
+	return errorMessage;
 }
-public Map<String, String> getMessage() {
-	return message;
-}
-public void setMessage(Map<String, String> message) {
-	this.message = message;
+public void setMessage(String errorMessage) {
+	this.errorMessage = errorMessage;
 }
 
 

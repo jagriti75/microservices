@@ -1,7 +1,0 @@
-package validation.user.data;
-
-import org.springframework.data.repository.CrudRepository;
-
-public class UserRepository implements CrudRepository<T, ID> {
-
-}

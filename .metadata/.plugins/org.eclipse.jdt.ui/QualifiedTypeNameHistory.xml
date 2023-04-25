@@ -44,4 +44,7 @@
     <fullyQualifiedTypeName name="org.slf4j.Logger"/>
     <fullyQualifiedTypeName name="org.slf4j.LoggerFactory"/>
     <fullyQualifiedTypeName name="validation.user.exception.UnauthorizedException"/>
+    <fullyQualifiedTypeName name="org.springframework.dao.IncorrectResultSizeDataAccessException"/>
+    <fullyQualifiedTypeName name="org.springframework.transaction.CannotCreateTransactionException"/>
+    <fullyQualifiedTypeName name="validation.user.error.root"/>
 </qualifiedTypeNameHistroy>
