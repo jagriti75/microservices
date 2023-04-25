@@ -8,10 +8,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -156,8 +158,8 @@ public class ExceptionHandler{
 			                         .body(error);
 		}
 	
-	//to handle database disconnection 
-	@org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
+	//to handle internal server error 
+	@org.springframework.web.bind.annotation.ExceptionHandler(CannotCreateTransactionException.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ResponseBody
 	public ResponseEntity<?> handleInvalidArgument1(Exception ex , HttpServletRequest req){
@@ -177,7 +179,7 @@ public class ExceptionHandler{
 			}
 		}
 		Map<String,String> maps = new HashMap<>() ;
-		maps.put("invalid", "could not process the request");
+		maps.put("invalid", "could not connect to database");
 		
 		error error = new error(500 , date , maps);
 	
@@ -186,7 +188,39 @@ public class ExceptionHandler{
 		                         .body(error);
 		
 	}
-	}
+
+	//to handle unauthorization
+	@org.springframework.web.bind.annotation.ExceptionHandler(UnauthorizedException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseBody
+	public ResponseEntity<?> handleNotFound(UnauthorizedException ex ,HttpServletRequest req){
+		HttpHeaders headers = new HttpHeaders();
+		if(req.getHeader("CONTENT-TYPE").contains("application/json")) {
+			if(req.getHeader("json").contains("true")) {
+			headers.set("CONTENT-TYPE", "application/json");	
+			}
+			else {
+				headers.set("CONTENT-TYPE", "application/xml");
+			}
+		}else {
+			if(req.getHeader("xml").contains("true")) {
+			headers.set("CONTENT-TYPE","application/xml");
+			}else {
+				headers.set("CONTENT-TYPE","application/json");
+			}
+		}
+	
+			Map<String,String> maps = new HashMap<>() ;
+			maps.put("invalidCredentials", ex.getMessage());
+			error error = new error(401 , date , maps);
+		
+			  HttpStatus badRequestStatus = HttpStatus.UNAUTHORIZED;
+			    return ResponseEntity.status(badRequestStatus).headers(headers)
+			                         .body(error);
+		}
+	
+	
+}
 	
 	
 

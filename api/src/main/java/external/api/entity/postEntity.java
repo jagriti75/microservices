@@ -2,6 +2,13 @@ package external.api.entity;
 
 public class postEntity {
 	
+	private int id;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	private String userId;
 	private String title;
 	private String body;

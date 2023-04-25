@@ -1,9 +1,8 @@
 package validation.user.controller;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -25,8 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import validation.user.data.UserRepository;
 import validation.user.entity.UserEntity;
-import validation.user.error.error;
+import validation.user.error.root;
 import validation.user.exception.ApiRequestException;
+import validation.user.exception.UnauthorizedException;
 
 
 
@@ -37,7 +37,6 @@ public class UserController{
 	@Autowired
 	UserRepository repo;
 
-	LocalDateTime date =  LocalDateTime.now();
 	
 	//to get details by username
 	@GetMapping(value="/{name}",consumes= {MediaType.APPLICATION_JSON_VALUE , MediaType.APPLICATION_XML_VALUE} ,
@@ -60,10 +59,7 @@ public class UserController{
 		}
 		
 		if(!(req.getHeader("id").contains("abc"))) {
-			Map<String,String> maps = new HashMap<>() ;
-			maps.put("invalidCredentials", "id entered is wrong");
-			error error = new error(401 , date , maps);
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).headers(headers).body(error);					
+			throw new UnauthorizedException("id entered is wrong");
 		}else {
 			UserEntity user = repo.findByName(name);
 			if(user == null) {
@@ -96,22 +92,18 @@ public class UserController{
 	
 		
 		if(!(req.getHeader("id").contains("abc"))) {
-			Map<String,String> maps = new HashMap<>() ;
-			maps.put("invalidCredentials", "id entered is wrong");
-			error error = new error(401 , date , maps);
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).headers(headers).body(error);
-			
-			
+			throw new UnauthorizedException("id entered is wrong");			
 		}else{
 			if(result.hasErrors()){			
-				Map<String,String> maps = new HashMap<>() ;
+				//Map<String,String> maps = new HashMap<>() ;
+				String msg = null;
 				List<FieldError> errors = result.getFieldErrors();
 				for(FieldError error:errors) {					
-					maps.put("error"+error.getField().substring(0,1).toUpperCase()+error.getField().substring(1), error.getDefaultMessage());
-					
+					//maps.put("error"+error.getField().substring(0,1).toUpperCase()+error.getField().substring(1), error.getDefaultMessage());
+					msg = error.getDefaultMessage();
 				}
 	
-				error error = new error(400 , date , maps);		
+				root error = new root(msg);		
 				return  ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(error);
 				}						
 		    }		

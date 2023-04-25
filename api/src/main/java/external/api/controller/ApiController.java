@@ -33,8 +33,6 @@ import external.api.entity.postEntity;
 public class ApiController {
 	
 	Logger logger = LoggerFactory.getLogger(this.getClass());
-	LocalDateTime date = LocalDateTime.now();
-	String id = UUID.randomUUID().toString();
 	HttpHeaders headers = new HttpHeaders();
 	
 	@Autowired
@@ -63,7 +61,7 @@ public class ApiController {
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response= restTemplate.exchange(url,HttpMethod.GET,entity,String.class);
-		LocalDateTime date =  LocalDateTime.now();
+		LocalDateTime date = LocalDateTime.now();
 		String id = UUID.randomUUID().toString();
 		logger.info("DateTime Logged in : "+ date);
 		logger.info("Id: "+ id);
@@ -71,11 +69,15 @@ public class ApiController {
 	}
 
 	@PostMapping(value="/post")
-	private String getList1(@RequestBody postEntity entity) {
+	private postEntity getList1(@RequestBody postEntity entity) {
+		entity.setId(101);
 		String url1 = "https://jsonplaceholder.typicode.com/posts";
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<postEntity> httpentity = new HttpEntity<>(entity , headers);
 		RestTemplate restTemplate = new RestTemplate();
-		String response1 = restTemplate.postForEntity(url1, entity , String.class).getBody();
-		return response1;
+		ResponseEntity<postEntity> response1 = restTemplate.postForEntity(url1, httpentity , postEntity.class);
+		return response1.getBody();
 	}
 
 	//to convert formats (json to json , xml ... xml to json,xml)
@@ -89,6 +91,8 @@ public class ApiController {
 		}
 		
 		if(isJson == "yes" && req.getHeader("json").contains("true")) {
+			LocalDateTime date = LocalDateTime.now();
+			String id = UUID.randomUUID().toString();
 			data = new LogData(id,"json to json",date.toString());
 			repo.save(data);
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -97,6 +101,8 @@ public class ApiController {
 					.body(value);
 		}
 		else if(isJson == "yes" && req.getHeader("xml").contains("true")) {
+			LocalDateTime date = LocalDateTime.now();
+			String id = UUID.randomUUID().toString();
 			data = new LogData(id,"json to xml",date.toString());
 			repo.save(data);
 			headers.set("Content-Type","application/xml");
@@ -106,6 +112,8 @@ public class ApiController {
 					.body(XML.toString(jsonValue));
 		}
 		else if(isJson == "no" && req.getHeader("json").contains("true")) {
+			LocalDateTime date = LocalDateTime.now();
+			String id = UUID.randomUUID().toString();
 			data = new LogData(id,"xml to json",date.toString());
 			repo.save(data);
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -115,6 +123,8 @@ public class ApiController {
 					.body(jsonValue.toString());
 		}
 		else {
+			LocalDateTime date = LocalDateTime.now();
+			String id = UUID.randomUUID().toString();
 			data = new LogData(id,"xml to xml",date.toString());
 			repo.save(data);
 			headers.setContentType(MediaType.APPLICATION_XML);
